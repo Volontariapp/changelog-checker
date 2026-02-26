@@ -1,0 +1,13 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-deploy:
+    uses: Volontariapp/ci-tools/.github/workflows/build-changelog-checker.yml@main
+    secrets:
+      ORG_REPO_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
