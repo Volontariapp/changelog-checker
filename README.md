@@ -4,10 +4,29 @@ A lightweight, fast CLI tool written in Go to ensure that `CHANGELOG.md` files c
 
 ## 🎯 Purpose
 
-This tool verifies two main things before a release can be merged:
-1. **Version Match:** The latest version header in `CHANGELOG.md` (e.g., `## [1.0.0] - ...`) must exactly match the `version` field from `package.json`.
-2. **Pull Request Link:** The changelog must contain a valid footer link to the Pull Request that introduces these changes.
-   - Format: `[1.0.0]: https://github.com/Volontariapp/<repo>/pull/<number or PLACEHOLDER>`
+This tool verifies release changelog compliance before a merge:
+1. **Version Match:** The first changelog version header must exactly match the `version` field from `package.json`.
+2. **Changelog Structure:** `CHANGELOG.md` must contain:
+   - `# Changelog`
+   - a version header in the format `## x.y.z`
+   - `### Patch Changes`
+   - at least one bullet item under the section (line starting with `- `)
+
+It does **not** validate a footer PR link anymore.
+
+Expected example:
+
+```markdown
+# Changelog
+
+## 0.7.1
+
+### Patch Changes
+
+- [#25](https://github.com/Volontariapp/npm-packages/pull/25) [`fb3b3cf`](https://github.com/Volontariapp/npm-packages/commit/fb3b3cf44270654a85ff24517585f888bb78ea48) Thanks [@Fyorix](https://github.com/Fyorix)! - added new test snapshot for package contract
+
+- test patch contracts
+```
 
 ## 🚀 Usage
 
@@ -23,7 +42,7 @@ You can run the checker by providing the paths to both the `package.json` and th
 
 **Exit Codes:**
 - `0`: Validation successful.
-- `1`: Validation failed (mismatch, missing link, or missing files). 
+- `1`: Validation failed (mismatch, invalid format, or missing files).
 
 ## 🛠 Development
 
@@ -31,7 +50,7 @@ You can run the checker by providing the paths to both the `package.json` and th
 - Go 1.22+
 
 ### Run Tests
-A full test suite is included to cover various edge cases (valid files, missing PR links, version mismatches, etc.).
+A full test suite is included to cover edge cases (valid files, missing sections, missing list entries, and version mismatches).
 ```bash
 go test -v ./...
 ```

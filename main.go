@@ -20,7 +20,6 @@ func (e *VerificationError) Error() string {
 }
 
 func VerifyChangelog(packageJsonPath string, changelogPath string) error {
-
 	pkgData, err := os.ReadFile(packageJsonPath)
 	if err != nil {
 		return fmt.Errorf("could not read package.json: %w", err)
@@ -42,10 +41,15 @@ func VerifyChangelog(packageJsonPath string, changelogPath string) error {
 	}
 	changelog := string(changelogData)
 
-	headerRe := regexp.MustCompile(`(?m)^## \[([^\]]+)\]`)
-	matches := headerRe.FindStringSubmatch(changelog)
+	titleRe := regexp.MustCompile(`(?m)^# Changelog\s*$`)
+	if !titleRe.MatchString(changelog) {
+		return &VerificationError{Message: "missing '# Changelog' title"}
+	}
+
+	versionRe := regexp.MustCompile(`(?m)^## (\d+\.\d+\.\d+)\s*$`)
+	matches := versionRe.FindStringSubmatch(changelog)
 	if len(matches) < 2 {
-		return &VerificationError{Message: "no version header found in CHANGELOG.md"}
+		return &VerificationError{Message: "missing version header in format '## x.y.z'"}
 	}
 
 	latestChangelogVersion := matches[1]
@@ -55,13 +59,16 @@ func VerifyChangelog(packageJsonPath string, changelogPath string) error {
 		}
 	}
 
-	linkPattern := fmt.Sprintf(`(?m)^\[%s\]:\s*https?://github\.com/Volontariapp/[A-Za-z0-9_\-\.]+/pull/(PLACEHOLDER|\d+)`, regexp.QuoteMeta(version))
-	linkRe := regexp.MustCompile(linkPattern)
-	
-	if !linkRe.MatchString(changelog) {
+	patchChangesRe := regexp.MustCompile(`(?m)^### Patch Changes\s*$`)
+	if !patchChangesRe.MatchString(changelog) {
 		return &VerificationError{
-			Message: fmt.Sprintf("no valid PR link found for version [%s] in the footer. Expected format: [%s]: https://github.com/Volontariapp/repo/pull/PLACEHOLDER (or a number)", version, version),
+			Message: "missing '### Patch Changes' section",
 		}
+	}
+
+	listItemRe := regexp.MustCompile(`(?m)^-\s+.+`)
+	if !listItemRe.MatchString(changelog) {
+		return &VerificationError{Message: "missing changelog entries (bullet list items)"}
 	}
 
 	return nil
@@ -88,5 +95,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("✅ Changelog is compliant with package.json!")
+	fmt.Println("✅ Changelog is compliant with package.json version and format!")
 }
