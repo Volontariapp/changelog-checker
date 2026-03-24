@@ -59,10 +59,10 @@ func VerifyChangelog(packageJsonPath string, changelogPath string) error {
 		}
 	}
 
-	patchChangesRe := regexp.MustCompile(`(?m)^### Patch Changes\s*$`)
-	if !patchChangesRe.MatchString(changelog) {
+	allowedChangesSectionRe := regexp.MustCompile(`(?m)^### (Patch|Minor|Major) Changes\s*$`)
+	if !allowedChangesSectionRe.MatchString(changelog) {
 		return &VerificationError{
-			Message: "missing '### Patch Changes' section",
+			Message: "missing changes section: expected one of '### Patch Changes', '### Minor Changes', or '### Major Changes'",
 		}
 	}
 

@@ -87,7 +87,7 @@ func TestVerifyChangelog_MissingVersionHeader(t *testing.T) {
 	}
 }
 
-func TestVerifyChangelog_MissingPatchChangesSection(t *testing.T) {
+func TestVerifyChangelog_MissingChangesSection(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	pkgPath := filepath.Join(tmpDir, "package.json")
@@ -105,11 +105,59 @@ func TestVerifyChangelog_MissingPatchChangesSection(t *testing.T) {
 
 	err := VerifyChangelog(pkgPath, changelogPath)
 	if err == nil {
-		t.Fatal("expected error due to missing patch changes section")
+		t.Fatal("expected error due to missing changes section")
 	}
 
-	if !strings.Contains(err.Error(), "missing '### Patch Changes' section") {
+	if !strings.Contains(err.Error(), "missing changes section") {
 		t.Errorf("unexpected error message: %v", err)
+	}
+}
+
+func TestVerifyChangelog_ValidMinorChangesSection(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	pkgPath := filepath.Join(tmpDir, "package.json")
+	changelogPath := filepath.Join(tmpDir, "CHANGELOG.md")
+
+	pkgContent := `{"version": "1.2.0"}`
+	os.WriteFile(pkgPath, []byte(pkgContent), 0644)
+
+	changelogContent := `# Changelog
+## 1.2.0
+
+### Minor Changes
+
+- add a small feature
+`
+	os.WriteFile(changelogPath, []byte(changelogContent), 0644)
+
+	err := VerifyChangelog(pkgPath, changelogPath)
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
+	}
+}
+
+func TestVerifyChangelog_ValidMajorChangesSection(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	pkgPath := filepath.Join(tmpDir, "package.json")
+	changelogPath := filepath.Join(tmpDir, "CHANGELOG.md")
+
+	pkgContent := `{"version": "2.0.0"}`
+	os.WriteFile(pkgPath, []byte(pkgContent), 0644)
+
+	changelogContent := `# Changelog
+## 2.0.0
+
+### Major Changes
+
+- introduce a breaking API change
+`
+	os.WriteFile(changelogPath, []byte(changelogContent), 0644)
+
+	err := VerifyChangelog(pkgPath, changelogPath)
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
 	}
 }
 
