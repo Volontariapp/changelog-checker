@@ -46,7 +46,7 @@ func VerifyChangelog(packageJsonPath string, changelogPath string) error {
 		return &VerificationError{Message: "missing '# Changelog' title"}
 	}
 
-	versionRe := regexp.MustCompile(`(?m)^## (\d+\.\d+\.\d+)\s*$`)
+	versionRe := regexp.MustCompile(`(?m)^##\s+([0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z\.-]+)?)\s*$`)
 	matches := versionRe.FindStringSubmatch(changelog)
 	if len(matches) < 2 {
 		return &VerificationError{Message: "missing version header in format '## x.y.z'"}

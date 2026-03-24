@@ -214,3 +214,27 @@ func TestVerifyChangelog_VersionMismatch(t *testing.T) {
 		t.Errorf("unexpected error message: %v", err)
 	}
 }
+
+func TestVerifyChangelog_PrereleaseVersionAccepted(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	pkgPath := filepath.Join(tmpDir, "package.json")
+	changelogPath := filepath.Join(tmpDir, "CHANGELOG.md")
+
+	pkgContent := `{"version": "0.0.0-20260324142521"}`
+	os.WriteFile(pkgPath, []byte(pkgContent), 0644)
+
+	changelogContent := `# Changelog
+## 0.0.0-20260324142521
+
+### Patch Changes
+
+- test snapshot
+`
+	os.WriteFile(changelogPath, []byte(changelogContent), 0644)
+
+	err := VerifyChangelog(pkgPath, changelogPath)
+	if err != nil {
+		t.Errorf("expected no error, got %v", err)
+	}
+}
