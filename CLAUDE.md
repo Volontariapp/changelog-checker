@@ -1,6 +1,7 @@
 <!-- gitnexus:start -->
 # 🧠 GitNexus — Code Intelligence
 
+This project is indexed by GitNexus as **changelog-checker**. Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > [!IMPORTANT]
 > If any tool warns that the index is stale, run `npx gitnexus analyze` immediately.
