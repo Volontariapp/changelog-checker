@@ -25,7 +25,7 @@ Expected example:
 
 - [#25](https://github.com/Volontariapp/npm-packages/pull/25) [`fb3b3cf`](https://github.com/Volontariapp/npm-packages/commit/fb3b3cf44270654a85ff24517585f888bb78ea48) Thanks [@Fyorix](https://github.com/Fyorix)! - added new test snapshot for package contract
 
-- test patch contracts
+- tests patch contracts
 ```
 
 ## 🚀 Usage
